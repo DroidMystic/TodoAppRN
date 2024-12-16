@@ -6,6 +6,7 @@ import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { Inter_500Medium, useFonts } from "@expo-google-fonts/inter";
 import { ThemeContext } from "@/context/ThemeContext";
 import Octicons from "@expo/vector-icons/Octicons";
+import Animated, { LinearTransition } from 'react-native-reanimated';
 
 export default function Index() {
   const [todos, setTodos] = useState(data.sort((a, b) => b.id - a.id));
@@ -78,12 +79,15 @@ export default function Index() {
         }
         </Pressable>
       </View>
-      <FlatList 
+      <Animated.FlatList 
       data={todos}
       renderItem={renderItem}
       keyExtractor={todo => todo.id}
-      contentContainerStyle={{flexGrow:1}}>
-      </FlatList>
+      contentContainerStyle={{flexGrow:1}}
+      itemLayoutAnimation={LinearTransition}
+      keyboardDismissMode='on-drag'
+      >
+      </Animated.FlatList>
     </SafeAreaView>
   );
 }
