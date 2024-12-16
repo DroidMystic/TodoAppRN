@@ -1,13 +1,25 @@
 import { Text, View, TextInput, Pressable, StyleSheet, FlatList } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useState } from "react";
+import { useState, useContext } from "react";
 import { data } from "@/data/todos";
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
+import { Inter_500Medium, useFonts } from "@expo-google-fonts/inter";
+import { ThemeContext } from "@/context/ThemeContext";
+import Octicons from "@expo/vector-icons/Octicons";
 
 export default function Index() {
   const [todos, setTodos] = useState(data.sort((a, b) => b.id - a.id));
   const [text, setText] = useState("");
+  const { colorScheme, setColorScheme, theme } = useContext(ThemeContext)
+  const [loaded, error] = useFonts({
+    Inter_500Medium,
+  })
 
+  if(!loaded && !error){
+    return null
+  }
+
+  const styles = createStyles(theme, colorScheme)
   const addTodo = () => {
     if (text.trim()) {
       const newId = todos.length > 0 ? todos[0].id + 1 : 1;
@@ -55,6 +67,16 @@ export default function Index() {
         <Pressable onPress={addTodo} style={styles.addButton}>
           <Text style={styles.addButtonText}>Add</Text>
         </Pressable>
+        <Pressable 
+        onPress={() => setColorScheme(colorScheme === 'light' ? 
+          'dark' : 'light')} style={{marginLeft: 10}}>
+            {colorScheme === 'dark'
+            ? <Octicons name="moon" size={36} color={theme.text}
+          selectable={undefined} style={{ width:36}} />
+        :<Octicons name="sun" size={36} color={theme.text}
+        selectable={undefined} style={{ width:36}} />
+        }
+        </Pressable>
       </View>
       <FlatList 
       data={todos}
@@ -66,11 +88,12 @@ export default function Index() {
   );
 }
 
-const styles = StyleSheet.create({
+function createStyles(theme, colorScheme) {
+  return StyleSheet.create({
   container: {
     flex: 1,
     width: "100%",
-    backgroundColor: "black",
+    backgroundColor: theme.background,
   },
   inputContainer: {
     flexDirection: "row",
@@ -91,15 +114,16 @@ const styles = StyleSheet.create({
     marginRight: 10,
     fontSize: 18,
     minWidth: 0,
-    color: "white",
+    color: theme.text,
+    fontFamily:"Inter_500Medium"
   },
   addButton: {
-    backgroundColor: "white",
+    backgroundColor: theme.button,
     padding:10,
     borderRadius: 5,
   },
   addButtonText: {
-    color: "black",
+    color: colorScheme === 'dark' ? 'black' : 'white',
     fontSize: 18,
   },
   todoItem:{
@@ -118,10 +142,12 @@ const styles = StyleSheet.create({
   todoText:{
     flex:1,
     fontSize:18,
-    color:"white"
+    color:theme.text,
+    fontFamily:"Inter_500Medium"
   },
   completedText:{
     textDecorationLine:'line-through',
     color:'gray'
   }
 });
+}
